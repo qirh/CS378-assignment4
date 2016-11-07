@@ -47,3 +47,8 @@ Setting up database:
 7) Create Table
    - use student_courses;
    - create table courses(name varchar(255) NOT NULL, course_num varchar(20) NOT NULL, course_id int NOT NULL AUTO_INCREMENT, PRIMARY KEY(course_id));
+
+
+user = almto3
+database = cs378_almto3
+password = PxWHQV5wg5

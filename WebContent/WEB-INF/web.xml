@@ -11,17 +11,17 @@
       
        <context-param>
       	     <param-name>DBURL</param-name>
-      	     <param-value>testurl</param-value>
+      	     <param-value>cs378_almto3</param-value>
       </context-param>
 
        <context-param>
       	     <param-name>DBUSERNAME</param-name>
-      	     <param-value>testuser</param-value>
+      	     <param-value>almto3</param-value>
       </context-param>
 
        <context-param>
       	     <param-name>DBPASSWORD</param-name>
-      	     <param-value>testpass</param-value>
+      	     <param-value>PxWHQV5wg5</param-value>
       </context-param>
       
       <servlet>
