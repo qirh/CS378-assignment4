@@ -5,7 +5,6 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-
 import javax.sql.DataSource;
 
 import org.apache.commons.dbcp.BasicDataSource;
@@ -15,14 +14,16 @@ import assign.domain.Project;
 
 public class ProjectServiceImpl implements ProjectService {
 
-	String dbURL = "";
+	String dbURL;
 	String dbUsername = "";
 	String dbPassword = "";
 	DataSource ds;
 
 	// DB connection information would typically be read from a config file.
 	public ProjectServiceImpl(String dbUrl, String username, String password) {
-		this.dbURL = dbUrl;
+		this.dbURL = "jdbc:mysql://" + 
+					 "fall-2016.cs.utexas.edu/" + 
+					 "cs378_almto3";
 		this.dbUsername = username;
 		this.dbPassword = password;
 		
@@ -37,89 +38,52 @@ public class ProjectServiceImpl implements ProjectService {
         ds.setDriverClassName("com.mysql.jdbc.Driver");
         return ds;
     }
-	/*
-	public NewCourse addCourse(NewCourse c) throws Exception {
+	
+	public Project addProject(Project p) throws Exception {
 		Connection conn = ds.getConnection();
 		
-		String insert = "INSERT INTO courses(name, course_num) VALUES(?, ?)";
-		PreparedStatement stmt = conn.prepareStatement(insert,
-                Statement.RETURN_GENERATED_KEYS);
+		String insert = "INSERT INTO Projects(name, description) VALUES(?, ?)";
+		PreparedStatement stmt = conn.prepareStatement(insert, Statement.RETURN_GENERATED_KEYS);
 		
-		stmt.setString(1, c.getName());
-		stmt.setString(2, c.getCourseNum());
+		stmt.setString(1, p.getName());
+		stmt.setString(2, p.getDescription());
 		
 		int affectedRows = stmt.executeUpdate();
 
-        if (affectedRows == 0) {
-            throw new SQLException("Creating course failed, no rows affected.");
-        }
+        if (affectedRows == 0) 
+            throw new SQLException("Creating project failed, no rows affected.");
         
         ResultSet generatedKeys = stmt.getGeneratedKeys();
-        if (generatedKeys.next()) {
-        	c.setCourseId(generatedKeys.getInt(1));
-        }
-        else {
-            throw new SQLException("Creating course failed, no ID obtained.");
-        }
         
-        // Close the connection
+        if (generatedKeys.next())
+        	p.setId(generatedKeys.getInt(1));
+        else 
+            throw new SQLException("Creating project failed, no ID obtained.");
+        
         conn.close();
-        
-		return c;
+		return p;
 	}
-
-	public NewCourse getCourse(int courseId) throws Exception {
-		String query = "select * from courses where course_id=" + courseId;
+    public Project getProject(int id) throws Exception {
+		String query = "select * from Projects where id=?";
+		System.out.println("here");
 		Connection conn = ds.getConnection();
+		System.out.println("here2");
 		PreparedStatement s = conn.prepareStatement(query);
+		s.setString(1, String.valueOf(id));
+		System.out.println("here3");
 		ResultSet r = s.executeQuery();
+		System.out.println("here4");
 		
 		if (!r.next()) {
-			return null;
+		    return null;
 		}
-		
-		NewCourse c = new NewCourse();
-		c.setCourseNum(r.getString("course_num"));
-		c.setName(r.getString("name"));
-		c.setCourseId(r.getInt("course_id"));
-		return c;
-	}
-
-    public NewCourse getCourse_correct(int courseId) throws Exception {
-	String query = "select * from courses where course_id=?";
-	Connection conn = ds.getConnection();
-	PreparedStatement s = conn.prepareStatement(query);
-	s.setString(1, String.valueOf(courseId));
-
-	ResultSet r = s.executeQuery();
-	
-	if (!r.next()) {
-	    return null;
-	}
-	
-	NewCourse c = new NewCourse();
-	c.setCourseNum(r.getString("course_num"));
-	c.setName(r.getString("name"));
-	c.setCourseId(r.getInt("course_id"));
-	return c;
+		System.out.println("here5");
+		Project p = new Project();
+		p.setDescription(r.getString("description"));
+		p.setName(r.getString("name"));
+		p.setId(r.getInt("id"));
+		System.out.println("here6, project name = " + p.getName());
+		return p;
     }
-	*/
-	@Override
-	public Project addProject(Project c) throws Exception {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public Project getProject(int projectId) throws Exception {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public Project getProject_correct(int projectId) throws Exception {
-		// TODO Auto-generated method stub
-		return null;
-	}
 
 }

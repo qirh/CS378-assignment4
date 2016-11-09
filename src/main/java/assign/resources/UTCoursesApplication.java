@@ -6,13 +6,14 @@ import java.util.Set;
 import javax.ws.rs.ApplicationPath;
 import javax.ws.rs.core.Application;
 
-@ApplicationPath("/ut")
+@ApplicationPath("/")
 public class UTCoursesApplication extends Application {
 	
 	private Set<Object> singletons = new HashSet<Object>();
 	private Set<Class<?>> classes = new HashSet<Class<?>>();
 	
 	public UTCoursesApplication() {		
+		System.out.println("UTCoursesApplication constructor");
 	}
 	
 	@Override

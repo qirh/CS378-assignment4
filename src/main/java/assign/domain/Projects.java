@@ -14,7 +14,7 @@ public class Projects {
     private List<Project> projects;
     
     public Projects() {
-    	projects = new ArrayList();
+    	projects = new ArrayList<Project>();
     }
     
     public List<Project> getProjects() {

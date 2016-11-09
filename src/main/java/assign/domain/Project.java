@@ -1,7 +1,5 @@
 package assign.domain;
 
-import java.util.ArrayList;
-import java.util.List;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -12,50 +10,38 @@ import javax.xml.bind.annotation.XmlRootElement;
 public class Project {
 
 	private String name;
-	private String des;
-	private List<String> link;
+	private String description;
+	private int id;
 	
-	public Project(String name, String des, String link) {
-		this.name = name;
-		this.des = des;
-		this.link = new ArrayList<String>();
-		this.link.add(link);
+	public Project() {
+		
 	}
-	/*	copy constructor	*/
-	public Project(String name, String des, List<String> link) {
-		this.name = name;
-		this.des = des;
-		
-		List<String> tmp = new ArrayList<String>();
-		for(String l : link)
-			tmp.add(l);
-		
-		this.link = tmp;
+	public Project(String name, String description, int id) {
+		this.name = new String(name);
+		this.description = new String(description);
+		this.id = id;
 	}
 
 	public String getName() {
 		return name;
 	}
-	public String getDes() {
-		return des;
+	public String getDescription() {
+		return description;
 	}
-	public List<String> getLink() {
-		return link;
+	public int getId() {
+		return id;
 	}
 	public void setName(String name) {
 		this.name = name;
 	}
-	public void setDes(String des) {
-		this.des = des;
+	public void setDescription(String description) {
+		this.description = description;
 	}
-    public void setLink(List<String> link) {
-        this.link = link;
-    }
-    public void addLink(String link) {
-        this.link.add(link);
+    public void setId(int id) {
+        this.id = id;
     }
     
     public Project copy() {
-    	return new Project(this.name, this.des, this.link);
+    	return new Project(this.name, this.description, this.id);
     }
 }
