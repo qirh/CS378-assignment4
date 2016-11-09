@@ -10,11 +10,15 @@
       </context-param>
       
        <context-param>
-      	     <param-name>DBURL</param-name>
+      	     <param-name>DBNAME</param-name>
       	     <param-value>cs378_almto3</param-value>
       </context-param>
-
-       <context-param>
+      <context-param>
+      	     <param-name>DBHOST</param-name>
+      	     <param-value>localhost</param-value>
+      </context-param>
+		<!-- jdbc:mysql://localhost:3306/projects -->
+      <context-param>
       	     <param-name>DBUSERNAME</param-name>
       	     <param-value>almto3</param-value>
       </context-param>

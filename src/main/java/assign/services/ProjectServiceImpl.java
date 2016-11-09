@@ -10,10 +10,10 @@ import javax.sql.DataSource;
 
 import org.apache.commons.dbcp.BasicDataSource;
 
-import assign.domain.Course;
-import assign.domain.NewCourse;
+import assign.domain.Project;
 
-public class CourseStudentServiceImpl implements CourseStudentService {
+
+public class ProjectServiceImpl implements ProjectService {
 
 	String dbURL = "";
 	String dbUsername = "";
@@ -21,7 +21,7 @@ public class CourseStudentServiceImpl implements CourseStudentService {
 	DataSource ds;
 
 	// DB connection information would typically be read from a config file.
-	public CourseStudentServiceImpl(String dbUrl, String username, String password) {
+	public ProjectServiceImpl(String dbUrl, String username, String password) {
 		this.dbURL = dbUrl;
 		this.dbUsername = username;
 		this.dbPassword = password;
@@ -37,7 +37,7 @@ public class CourseStudentServiceImpl implements CourseStudentService {
         ds.setDriverClassName("com.mysql.jdbc.Driver");
         return ds;
     }
-	
+	/*
 	public NewCourse addCourse(NewCourse c) throws Exception {
 		Connection conn = ds.getConnection();
 		
@@ -103,5 +103,23 @@ public class CourseStudentServiceImpl implements CourseStudentService {
 	c.setCourseId(r.getInt("course_id"));
 	return c;
     }
+	*/
+	@Override
+	public Project addProject(Project c) throws Exception {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Project getProject(int projectId) throws Exception {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Project getProject_correct(int projectId) throws Exception {
+		// TODO Auto-generated method stub
+		return null;
+	}
 
 }

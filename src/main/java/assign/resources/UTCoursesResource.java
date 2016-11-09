@@ -2,8 +2,6 @@ package assign.resources;
 
 import java.io.IOException;
 import java.io.OutputStream;
-import java.util.ArrayList;
-import java.util.List;
 
 import javax.servlet.ServletContext;
 import javax.ws.rs.GET;
@@ -16,18 +14,16 @@ import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 
-import assign.domain.Course;
-import assign.domain.Courses;
 import assign.domain.NotFound;
 import assign.domain.Project;
 import assign.domain.Projects;
-import assign.services.CourseStudentService;
-import assign.services.CourseStudentServiceImpl;
+import assign.services.ProjectService;
+import assign.services.ProjectServiceImpl;
 
 @Path("/listing")
 public class UTCoursesResource {
 	
-	CourseStudentService courseStudentService;
+	ProjectService projectService;
 	String password;
 	String username;
 	String dburl;	
@@ -36,7 +32,7 @@ public class UTCoursesResource {
 		dburl = servletContext.getInitParameter("DBURL");
 		username = servletContext.getInitParameter("DBUSERNAME");
 		password = servletContext.getInitParameter("DBPASSWORD");
-		this.courseStudentService = new CourseStudentServiceImpl(dburl, username, password);		
+		this.projectService = new ProjectServiceImpl(dburl, username, password);		
 	}
 	
 	@GET
@@ -50,31 +46,6 @@ public class UTCoursesResource {
 		System.out.println("DBPassword:" + password);		
 		return "Hello world " + dburl + " " + username + " " + password;		
 	}
-		
-	@GET
-	@Path("/courses")
-	@Produces("application/xml")
-	public StreamingOutput getAllCourses() throws Exception {
-		Course modernWebApps = new Course();
-		modernWebApps.setDepartment("CS");
-		modernWebApps.setName("Modern Web Applications");
-		
-		Course operatingSystems = new Course();
-		operatingSystems.setDepartment("CS");
-		operatingSystems.setName("Operating Systems");
-		
-		final Courses courses = new Courses();
-		List<Course> courseList = new ArrayList<Course>();
-		courseList.add(modernWebApps);
-		courseList.add(operatingSystems);
-		courses.setCourses(courseList);		
-			    
-	    return new StreamingOutput() {
-	         public void write(OutputStream outputStream) throws IOException, WebApplicationException {
-	            outputCourses(outputStream, courses);
-	         }
-	      };	    
-	}
 	
 	@GET
 	@Path("/projects")
@@ -84,9 +55,7 @@ public class UTCoursesResource {
 		//heat.setName("%23heat");
 				
 		final Projects projects = new Projects();
-		projects.setProjects(new ArrayList<String>());
-		//projects.getProjects().add("%23heat");
-		projects.getProjects().add("%23dox");		
+		projects.addProject(new Project("%23dox", new String(), new String()));		
 			    
 	    return new StreamingOutput() {
 	         public void write(OutputStream outputStream) throws IOException, WebApplicationException {
@@ -100,11 +69,9 @@ public class UTCoursesResource {
 	@Produces("application/xml")
 	public StreamingOutput getProject() throws Exception {
 		
-		final Project heat = new Project();
+		final Project heat = new Project("%23heat", new String(), "l2");
 		heat.setName("%23heat");
-		heat.setLink(new ArrayList<String>());
-		heat.getLink().add("l3");
-		heat.getLink().add("l2");		
+		heat.addLink("l3");
 		
 		//throw new WebApplicationException();
 		
@@ -117,20 +84,7 @@ public class UTCoursesResource {
 	         }
 	      };
 	     
-	}		
-	
-	protected void outputCourses(OutputStream os, Courses courses) throws IOException {
-		try { 
-			JAXBContext jaxbContext = JAXBContext.newInstance(Courses.class);
-			Marshaller jaxbMarshaller = jaxbContext.createMarshaller();
-	 
-			jaxbMarshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
-			jaxbMarshaller.marshal(courses, os);
-		} catch (JAXBException jaxb) {
-			jaxb.printStackTrace();
-			throw new WebApplicationException();
-		}
-	}
+	}	
 	
 	protected void outputCourses(OutputStream os, Projects projects) throws IOException {
 		try { 

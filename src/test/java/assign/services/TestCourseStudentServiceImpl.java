@@ -7,12 +7,12 @@ import java.util.logging.Logger;
 import org.junit.Before;
 import org.junit.Test;
 
-import assign.domain.Course;
-import assign.domain.NewCourse;
+import assign.domain.Project;
+import assign.domain.Projects;
 
 public class TestCourseStudentServiceImpl {
 	
-	CourseStudentService csService = null;
+	ProjectService csService = null;
         Logger testLogger = Logger.getLogger("testlogger");
 	
 	@Before
@@ -20,9 +20,9 @@ public class TestCourseStudentServiceImpl {
 		String dburl = "jdbc:mysql://localhost:3306/student_courses";
 		String dbusername = "devdatta";
 		String dbpassword = "";
-		csService = new CourseStudentServiceImpl(dburl, dbusername, dbpassword);
+		csService = new ProjectServiceImpl(dburl, dbusername, dbpassword);
 	}
-	
+	/*
 	@Test
 	public void testCourseAddition() {
 		try {
@@ -43,21 +43,23 @@ public class TestCourseStudentServiceImpl {
 
     @Test
 	public void testCourseGet() {
-	try {
-	    NewCourse c = new NewCourse();
-	    c.setName("Introduction to Computer Science.");
-	    c.setCourseNum("CS102");
-	    c = csService.addCourse(c);
-	    
-	    NewCourse c1 = csService.getCourse_correct(c.getCourseId());
-	    testLogger.info(c1.getName());
-	    testLogger.info(c1.getCourseNum());
-	    testLogger.info(String.valueOf(c1.getCourseId()));
-	    assertEquals(c1.getName(), c.getName());
-	    assertEquals(c1.getCourseNum(), c.getCourseNum());
-	    assertEquals(c1.getCourseId(), c.getCourseId());
-	} catch (Exception e) {
-	    e.printStackTrace();
-	}
+		try {
+		    NewCourse c = new NewCourse();
+		    c.setName("Introduction to Computer Science.");
+		    c.setCourseNum("CS102");
+		    c = csService.addCourse(c);
+		    
+		    NewCourse c1 = csService.getCourse_correct(c.getCourseId());
+		    testLogger.info(c1.getName());
+		    testLogger.info(c1.getCourseNum());
+		    testLogger.info(String.valueOf(c1.getCourseId()));
+		    assertEquals(c1.getName(), c.getName());
+		    assertEquals(c1.getCourseNum(), c.getCourseNum());
+		    assertEquals(c1.getCourseId(), c.getCourseId());
+		} 
+		catch (Exception e) {
+		    e.printStackTrace();
+		}
     }
+    */
 }
