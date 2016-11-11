@@ -15,17 +15,21 @@ import assign.domain.Project;
 public class ProjectServiceImpl implements ProjectService {
 
 	String dbURL;
+	String dbHost;
 	String dbUsername = "";
 	String dbPassword = "";
 	DataSource ds;
 
 	// DB connection information would typically be read from a config file.
-	public ProjectServiceImpl(String dbUrl, String username, String password) {
+	public ProjectServiceImpl(String dbHost, String dbUsername, String dbPassword) {
+		
+		this.dbHost = dbHost;
+		this.dbUsername = dbUsername;
+		this.dbPassword = dbPassword;
+		
 		this.dbURL = "jdbc:mysql://" + 
-					 "fall-2016.cs.utexas.edu/" + 
-					 "cs378_almto3";
-		this.dbUsername = username;
-		this.dbPassword = password;
+				 		this.dbHost + "/cs378_" +
+				 		this.dbUsername;
 		
 		ds = setupDataSource();
 	}

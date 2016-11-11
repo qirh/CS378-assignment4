@@ -35,13 +35,13 @@ public class UTCoursesResource {
 	ProjectService projectService;
 	String password;
 	String username;
-	String dburl;	
+	String dbhost;	
 	
 	public UTCoursesResource(@Context ServletContext servletContext) {
-		dburl = servletContext.getInitParameter("DBURL");
+		dbhost = servletContext.getInitParameter("DBHOST");
 		username = servletContext.getInitParameter("DBUSERNAME");
 		password = servletContext.getInitParameter("DBPASSWORD");
-		this.projectService = new ProjectServiceImpl(dburl, username, password);		
+		this.projectService = new ProjectServiceImpl(dbhost, username, password);		
 	}
 	
 	@GET
@@ -50,10 +50,11 @@ public class UTCoursesResource {
 	public String helloWorld() {
 		System.out.println("Inside helloworld");
 		System.out.println("DB creds are:");
-		System.out.println("DBURL:" + dburl);
+		System.out.println("DBURL:" + dbhost);
 		System.out.println("DBUsername:" + username);
 		System.out.println("DBPassword:" + password);		
-		return "Hello world\n DBURL:" + dburl + "\nDBUSERNAME: " + username + "\nDBPASSWORD: " + password;		
+		return "Hello world\n DBHOST:" + dbhost + "\nDBUSERNAME: " + username + "\nDBPASSWORD: " + password + "\n\n" + "jdbc:mysql://" + dbhost + "/cs378_" +username;	
+		
 	}
 	
 	@GET
