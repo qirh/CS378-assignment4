@@ -10,15 +10,15 @@
   </context-param>
   <context-param>
     <param-name>DBHOST</param-name>
-    <param-value>fall-2016.cs.utexas.edu</param-value>
+    <param-value></param-value>
   </context-param>
   <context-param>
     <param-name>DBUSERNAME</param-name>
-    <param-value>almto3</param-value>
+    <param-value></param-value>
   </context-param>
   <context-param>
     <param-name>DBPASSWORD</param-name>
-    <param-value>PxWHQV5wg5</param-value>
+    <param-value></param-value>
   </context-param>
   <servlet>
     <servlet-name>assignment4</servlet-name>
