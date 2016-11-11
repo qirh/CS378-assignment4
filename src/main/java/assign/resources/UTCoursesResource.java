@@ -1,17 +1,26 @@
 package assign.resources;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.StringWriter;
+import java.net.URI;
+import java.sql.SQLException;
 
 import javax.servlet.ServletContext;
+import javax.ws.rs.Consumes;
+import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
+import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Response.ResponseBuilder;
 import javax.ws.rs.core.StreamingOutput;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
@@ -23,9 +32,7 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 
-import assign.domain.NotFound;
 import assign.domain.Project;
-import assign.domain.Projects;
 import assign.services.ProjectService;
 import assign.services.ProjectServiceImpl;
 
@@ -57,120 +64,103 @@ public class UTCoursesResource {
 		
 	}
 	
-	@GET
-	@Path("/project")
-	@Produces("application/xml")
-	public StreamingOutput getProject() throws Exception {
-		
-		final Project p = projectService.getProject(1);		//1 is a placeholder
-		
-	    return new StreamingOutput() {
-	         public void write(OutputStream outputStream) throws IOException, WebApplicationException {
-	            outputProject(outputStream, p);
-	         }
-	      };
-	     
-	}	
-	
-	@GET
-	@Path("/projects")
-	@Produces("application/xml")
-	public StreamingOutput getAllProjects() throws Exception {
-				
-		final Projects projects = new Projects();
-		projects.addProject(projectService.getProject(1));		
-			    
-	    return new StreamingOutput() {
-	         public void write(OutputStream outputStream) throws IOException, WebApplicationException {
-	            outputProjects(outputStream, projects);
-	         }
-	      };	    
-	}
 	
 	@POST
 	@Path("/projects")
-	@Produces("application/xml")
-	public StreamingOutput postProject(InputStream input) throws Exception {
+	@Consumes("application/xml")
+	public Response postProject(InputStream input) throws Exception {
 				
-		final Project p = readProject(input);
-		projectService.addProject(p);
-	    return new StreamingOutput() {
-	         public void write(OutputStream outputStream) throws IOException, WebApplicationException {
-	            outputProject(outputStream, p);
-	         }
-	      };	    
+		Project p = new Project();
+		
+		p = projectService.readProject(input);
+		
+		try {
+			if(p.getName().equals("") || p.getDes().equals(""))
+				throw new SQLException();
+			p = projectService.addProject(p);
+		}
+		catch(SQLException e) {
+			return Response.status(404).build();
+		}
+		
+		System.out.println(p.getDes());
+		System.out.println(p.getName());
+		System.out.println(p.getId());
+		
+		Response res = Response.created(URI.create("myeavesdrop/projects/" + p.getId())).build();
+		
+		return res;
+			
 	}
+	@PUT
+	@Path("/projects/{project_id}")
+	@Consumes("application/xml")
+	public Response putProject(@PathParam("project_id") Integer project_id, InputStream input) throws Exception {
+			
+		System.out.println("HERE1");
+		Project p = projectService.getProject(project_id);
+		System.out.println("HERE2");
+		if(p == null)
+			return Response.status(400).build(); 
+		try {
+			if(p.getName().equals("") || p.getDes().equals(""))
+				throw new SQLException();
+			p = projectService.updateProject(p, projectService.readDes(input));
+		}
+		catch(SQLException e) {
+			return Response.status(400).build();
+		}
+		System.out.println(p.getId());
+		return Response.ok().build();
+		
+			
+	}
+	@GET
+	@Path("/projects/{project_id}")
+	@Produces("application/xml")
+	public Response getProjects(@PathParam("project_id") Integer project_id) throws Exception {
+		
+		Project p = projectService.getProject(project_id);
 	
-	 protected Project readProject(InputStream is) {
-	      try {
-	         DocumentBuilder builder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
-	         Document doc = builder.parse(is);
-	         Element root = doc.getDocumentElement();
-	         Project p = new Project();
-	         if (root.getAttribute("id") != null && !root.getAttribute("id").trim().equals(""))
-	            p.setId(Integer.valueOf(root.getAttribute("id")));
-	         NodeList nodes = root.getChildNodes();
-	         for (int i = 0; i < nodes.getLength(); i++) {
-	            Element element = (Element) nodes.item(i);
-	            if (element.getTagName().equals("name")) {
-	               p.setName(element.getTextContent());
-	            }
-	            else if (element.getTagName().equals("description")) {
-	               p.setDescription(element.getTextContent());
-	            }
-	            else if (element.getTagName().equals("id")) {
-	               p.setId(Integer.parseInt(element.getTextContent()));
-	            }
-	         }
-	         return p;
-	      }
-	      catch (Exception e) {
-	         throw new WebApplicationException(e, Response.Status.BAD_REQUEST);
-	      }
-	   }
+		
+		if(p == null){
+			return Response.status(404).build();
+		}
+		System.out.println("HERE3");
+		try {
+			return Response.ok(projectXML(p), "application/xml").encoding("UTF-8").build();
+		}
+		catch(JAXBException e) {
+			return Response.status(404).build();
+		}
+	}
+	@DELETE
+	@Path("/projects/{project_id}")
+	@Consumes("application/xml")
+	public Response deleteProject(@PathParam("project_id") Integer project_id) throws Exception {
+				
+		
+		Project p = projectService.getProject(project_id);
+		
+		if(p == null)
+			return Response.status(404).build(); 
+		try {
+			p = projectService.deleteProject(p);
+		}
+		catch(SQLException e) {
+			e.printStackTrace();
+			return Response.status(400).build();
+		}
+		
+		return Response.ok().build();
+			
+	}
+	private String projectXML(Project p) throws JAXBException  {
+		StringWriter sw = new StringWriter();
+		JAXBContext jaxbContext = JAXBContext.newInstance(Project.class);
+		Marshaller jaxbMarshaller = jaxbContext.createMarshaller();
 
-	
-	protected void outputProjects(OutputStream os, Projects projects) throws IOException {
-		try { 
-			System.out.println("1 - outputProjects");
-			JAXBContext jaxbContext = JAXBContext.newInstance(Projects.class);
-			Marshaller jaxbMarshaller = jaxbContext.createMarshaller();
-	 
-			jaxbMarshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
-			jaxbMarshaller.marshal(projects, os);
-		} catch (JAXBException jaxb) {
-			jaxb.printStackTrace();
-			throw new WebApplicationException();
-		}
-	}	
-	
-	protected void outputProject(OutputStream os, Project project) throws IOException {
-		try { 
-			System.out.println("2 - outputProject ");
-			System.out.println(project == null );
-			System.out.println(os == null );
-			JAXBContext jaxbContext = JAXBContext.newInstance(Project.class);
-			Marshaller jaxbMarshaller = jaxbContext.createMarshaller();
-	 
-			jaxbMarshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
-			jaxbMarshaller.marshal(project, os);
-		} catch (JAXBException jaxb) {
-			jaxb.printStackTrace();
-			throw new WebApplicationException();
-		}
+		jaxbMarshaller.marshal(p, sw);
+		return sw.toString();
 	}
-	
-	protected void outputNotFound(OutputStream os, NotFound notFound) throws IOException {
-		try { 
-			System.out.println("3 - outputNotFound");
-			JAXBContext jaxbContext = JAXBContext.newInstance(NotFound.class);
-			Marshaller jaxbMarshaller = jaxbContext.createMarshaller();
-	 
-			jaxbMarshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
-			jaxbMarshaller.marshal(notFound, os);
-		} catch (JAXBException jaxb) {
-			jaxb.printStackTrace();
-			throw new WebApplicationException();
-		}
-	}	
 }
